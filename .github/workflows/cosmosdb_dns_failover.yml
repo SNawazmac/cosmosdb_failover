@@ -1,0 +1,64 @@
+name: cosmosdb_with_dns_failover
+on:
+  workflow_call:
+    inputs:
+      private_dns_zone_subscription_Id:
+        required: true
+        type: string
+      private_dns_zone_resource_group_name:
+        required: true
+        type: string
+      cosmosdb_private_dns_zone_global_record_name:
+        required: true
+        type: string
+      cosmosdb_private_dns_zone_primary_region_record_name:
+        required: true
+        type: string
+      cosmosdb_private_dns_zone_secondary_region_record_name:
+        required: true
+        type: string
+      cosmosdb_global_endpoint_primary_region_IP:
+        required: true
+        type: string
+      cosmosdb_global_endpoint_secondary_region_IP:
+        required: true
+        type: string
+      cosmosdb_primary_endpoint_primary_region_IP:
+        required: true
+        type: string
+      cosmosdb_primary_endpoint_secondary_region_IP:
+        required: true
+        type: string
+      cosmosdb_secondary_endpoint_primary_region_IP:
+        required: true
+        type: string
+      cosmosdb_secondary_endpoint_secondary_region_IP:
+        required: true
+        type: string
+      cosmosdb_private_dns_zone_name:
+        required: true
+        type: string
+    secrets:
+      AZURE_CREDENTIALS_DELOITTE_SUB:
+        required: true  
+jobs:  
+  cosmosdb_dns_failover:
+    permissions:
+      contents: none
+    runs-on: ubuntu-latest       
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+      with:
+        repository: SNawazmac/cosmosdb_failover
+    - name: Login via Az module
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZURE_CREDENTIALS_DELOITTE_SUB}}
+        enable-AzPSSession: true   
+    - name: Update recordset of Private DNS Zone
+      uses: azure/powershell@v1
+      with:
+        inlineScript: |
+         ./cosmosdb_dns_failover.ps1 -private_dns_zone_subscription_Id "${{inputs.private_dns_zone_subscription_Id}}" -private_dns_zone_resource_group_name "${{inputs.private_dns_zone_resource_group_name}}" -cosmosdb_private_dns_zone_name "${{inputs.cosmosdb_private_dns_zone_name}}" -cosmosdb_private_dns_zone_global_record_name "${{inputs.cosmosdb_private_dns_zone_global_record_name}}" -cosmosdb_private_dns_zone_primary_region_record_name "${{inputs.cosmosdb_private_dns_zone_primary_region_record_name}}" -cosmosdb_private_dns_zone_secondary_region_record_name "${{inputs.cosmosdb_private_dns_zone_secondary_region_record_name}}" -cosmosdb_global_endpoint_primary_region_IP "${{inputs.cosmosdb_global_endpoint_primary_region_IP}}" -cosmosdb_global_endpoint_secondary_region_IP "${{inputs.cosmosdb_global_endpoint_secondary_region_IP}}" -cosmosdb_primary_endpoint_primary_region_IP "${{inputs.cosmosdb_primary_endpoint_primary_region_IP}}" -cosmosdb_primary_endpoint_secondary_region_IP "${{inputs.cosmosdb_primary_endpoint_secondary_region_IP}}" -cosmosdb_secondary_endpoint_primary_region_IP "${{inputs.cosmosdb_secondary_endpoint_primary_region_IP}}" -cosmosdb_secondary_endpoint_secondary_region_IP "${{inputs.cosmosdb_secondary_endpoint_secondary_region_IP}}"
+        azPSVersion: "latest"
