@@ -36,6 +36,5 @@ jobs:
       uses: azure/powershell@v1
       with:
         inlineScript: |
-         ./cosmosdb_failover.ps1 -cosmosdb_resource_group_name "${{inputs.storage_account_resource_group_name}}" -private_storage_account_names "${{inputs.private_storage_account_names}}" -sku "${{inputs.sku}}"  
+         ./cosmosdb_failover.ps1 -cosmosdb_resource_group_name "${{inputs.cosmosdb_resource_group_name}}" -cosmosdb_name "${{inputs.cosmosdb_name}}" -cosmosdb_primary_region "${{inputs.cosmosdb_primary_region}}" -cosmosdb_secondary_region "${{inputs.cosmosdb_secondary_region}}"
         azPSVersion: "latest"
-  
